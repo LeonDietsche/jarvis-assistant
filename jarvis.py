@@ -5,6 +5,7 @@ import speech_recognition as sr
 import pywhatkit
 import wikipedia
 import pyjokes
+import webbrowser
 from dotenv import load_dotenv
 from openai import OpenAI
 from wikipedia.exceptions import DisambiguationError, PageError
@@ -65,10 +66,29 @@ def search_wikipedia(query):
     except PageError:
         return f"Sorry, I couldn't find anything on '{query}'."
 
-def run_jarvis():
-    """Main command loop."""
-    command = take_command()
+def take_command_low_sensitivity(timeout=10):
+    """More sensitive listener after 'Jarvis' is triggered. Times out if no response."""
+    recognizer = sr.Recognizer()
+    recognizer.energy_threshold = 300
+    recognizer.dynamic_energy_threshold = True
 
+    with sr.Microphone() as source:
+        print(f"🎙️ Listening for command (timeout in {timeout}s)...")
+        try:
+            audio = recognizer.listen(source, timeout=timeout, phrase_time_limit=8)
+            command = recognizer.recognize_google(audio).lower()
+            print(f"You said: {command}")
+            return command
+        except sr.WaitTimeoutError:
+            talk("Timeout. Going back to sleep.")
+        except sr.UnknownValueError:
+            print("I didn’t catch that.")
+        except sr.RequestError as e:
+            print("Speech recognition error:", e)
+    return ""
+
+def run_jarvis(command):
+    
     if "play" in command:
         song = command.replace("play", "").strip()
         talk(f"Playing {song}")
@@ -92,11 +112,32 @@ def run_jarvis():
         answer = ask_gpt(prompt)
         talk(answer)
 
+    elif "crunchyroll" in command or "https://www.crunchyroll.com" in command:
+        talk("📺 Opening Crunchyroll")
+        webbrowser.open("https://www.crunchyroll.com/de/")
+
     elif "stop" in command:
         talk("Goodbye!")
         exit()
 
-# Start the assistant
 if __name__ == "__main__":
     while True:
-        run_jarvis()
+        # Step 1: Wait for wake word with high threshold
+        print("🕵️ Waiting for 'Jarvis'...")
+
+        recognizer = sr.Recognizer()
+        recognizer.energy_threshold = 600  # High: needs loud/clear "Jarvis"
+        recognizer.dynamic_energy_threshold = False
+
+        with sr.Microphone() as source:
+            audio = recognizer.listen(source)
+            try:
+                wake_word = recognizer.recognize_google(audio).lower()
+                if "jarvis" in wake_word:
+                    talk("Yes?")
+                    
+                    # Step 2: Lower threshold and listen for actual command
+                    command = take_command_low_sensitivity()
+                    run_jarvis(command)
+            except:
+                continue
