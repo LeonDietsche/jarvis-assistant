@@ -1,6 +1,6 @@
 # 🤖 Jarvis - AI Voice Assistant
 
-Jarvis is a personal voice assistant powered by Python and OpenAI's GPT. It can recognize your voice, answer questions, tell jokes, play music, fetch information, and even chat like ChatGPT — all through simple voice commands.
+Jarvis is a personal voice assistant jsut like in ironman powered by Python and OpenAI's GPT. It can recognize your voice, answer questions, tell jokes, play music, fetch information, and even chat like ChatGPT — all through simple voice commands.
 
 ---
 
