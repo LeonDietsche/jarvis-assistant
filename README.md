@@ -24,12 +24,12 @@ To give jarvis a command simply say his name out loud and clearly he will follow
 2. Install packages | pip install -r requirements.txt
 
 Extras
-1. If you want to ask chatgpt place your replace os.getenv("OPENAI_API_KEY")
+1. If you want to ask chatgpt place your apikey in the env file. os.getenv("OPENAI_API_KEY")
 
 Example
  python jarvis.py
 🎙️ Listening...
-🗣️ You said: hello
+🗣️ You said: Hello jarvis
 🎙️ Listening...
 🗣️ You said: play alkaline by
 🧠 Jarvis: Playing alkaline by
